@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paddler Manager</title>
+    <style>
+        /* Base Styling rules matching your dark theme request */
+        body {
+            background-color: #000000;
+            color: #FFFFFF;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+        h1, h2 { color: #8B0000; text-align: center; margin-bottom: 25px; }
+        
+        /* Input Field Overrides */
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background-color: #111111;
+            color: white;
+            border: 1px solid #8B0000;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #8B0000;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        button:hover { opacity: 0.9; }
+        
+        /* Interactive 4-Tab Bar Engine Layout */
+        .tab-bar {
+            display: flex;
+            border-bottom: 2px solid #8B0000;
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            flex: 1;
+            background-color: transparent;
+            color: #888888;
+            border: none;
+            padding: 12px 5px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 0;
+        }
+        .tab-btn.active {
+            color: #FFFFFF;
+            border-bottom: 3px solid #8B0000;
+            margin-bottom: -2px;
+        }
+        .tab-content { display: none; padding: 10px 0; }
+        .tab-content.active { display: block; }
+        
+        /* Grid-based Profile Card Styling */
+        .paddler-card {
+            border: 1px solid #8B0000;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #0d0d0d;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .paddler-name {
+            font-size: 20px;
+            font-weight: bold;
+            text-transform: capitalize;
+            margin: 0;
+        }
+        .paddler-meta {
+            color: #888888;
+            font-size: 14px;
+            margin: 5px 0 0 0;
+        }
+        .expand-btn {
+            width: auto;
+            padding: 6px 12px;
+            background-color: transparent;
+            color: #8B0000;
+            border: 1px solid #8B0000;
+            font-size: 13px;
+        }
+        .expand-btn:hover { background-color: #8B0000; color: white; }
+        
+        /* Expandable Comments Drawer Layout */
+        .comments-drawer {
+            display: none;
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #161616;
+            border-left: 4px solid #8B0000;
+            border-radius: 4px;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #e0e0e0;
+        }
+        .group-paddler {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            border: 1px solid #333333;
+            border-radius: 6px;
+            background-color: #111111;
+        }       
+
+        .group-paddler input {
+            width: auto;
+            margin: 0 12px 0 0;
+        }
+
+        .group-paddler label {
+            cursor: pointer;
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- SCREEN 1: THE LOGIN UI LAYER -->
+    <div id="login-screen">
+        <h1>Paddler Login</h1>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="handleLogin()">Login</button>
+        <p id="error-msg" style="color: #ff4d4d; text-align: center; margin-top: 15px;"></p>
+    </div>
+
+    <!-- SCREEN 2: DYNAMIC MAIN APP MULTI-TAB LAYER -->
+    <div id="dashboard-screen" style="display: none;">
+        <h2>Paddler Dashboard</h2>
+        
+        <!-- The 4 Nav Tabs -->
+        <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab(0)">View All Paddlers</button>
+            <button class="tab-btn" onclick="switchTab(1)">Create Group</button>
+            <button class="tab-btn" onclick="switchTab(2)">Saved Groups</button>
+            <button class="tab-btn" onclick="switchTab(3)">Trip Log</button>
+        </div>
+
+        <!-- Tab Content 1: View All Profiles -->
+        <div id="tab-0" class="tab-content active">
+            <div id="paddler-list"></div>
+        </div>
+
+        <!-- Tab Content 2: Create Group Layout -->
+        <div id="tab-1" class="tab-content">
+            <h3>Create Group</h3>
+            <input 
+                type="text"
+                id="group-name"
+                placeholder="Group name"
+            >
+            <div id="group-paddler-list"></div>
+            <button onclick=onclick="alert('Not implemented yet')">Create Group</button>
+        
+            
+        </div>
+
+        <!-- Tab Content 3: Saved Groups Layout -->
+        <div id="tab-2" class="tab-content">
+            <p style="color: #888888; text-align: center;">Saved Groups Page (Blank for now)</p>
+        </div>
+
+        <!-- Tab Content 4: Trip Log Layout -->
+        <div id="tab-3" class="tab-content">
+            <p style="color: #888888; text-align: center;">Trip Log Page (Blank for now)</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_URL = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
+    
+    let paddlers = [];
+    
+    // Handle authentication API post
+    async function handleLogin() {
+        const user = document.getElementById("username").value;
+        const pass = document.getElementById("password").value;
+const API_URL = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
+        
+        try {
+            const response = await fetch(`${API_URL}/api/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username: user, password: pass })
+            });
+
+            if (response.ok) {
+                document.getElementById("login-screen").style.display = "none";
+                document.getElementById("dashboard-screen").style.display = "block";
+                await loadPaddlers();
+                loadGroupPaddlers();
+            } else {
+                document.getElementById("error-msg").innerText = "Invalid username or password credentials.";
+            }
+        } catch (err) {
+            document.getElementById("error-msg").innerText = "Cannot connect to backend server API.";
+        }
+    }
+
+    // Handles layout adjustments across tabs without calling the backend repeatedly
+    function switchTab(index) {
+        document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+            if(i === index) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+        document.querySelectorAll('.tab-content').forEach((tab, i) => {
+            if(i === index) tab.classList.add('active');
+            else tab.classList.remove('active');
+        });
+    }
+
+    // Build the profile loop using the data columns you provided
+    async function loadPaddlers() {
+        const response = await fetch(`${API_URL}/api/paddlers`);
+        paddlers = await response.json();
+        const listDiv = document.getElementById("paddler-list");
+        
+        listDiv.innerHTML = ""; 
+        paddlers.forEach((p, idx) => {
+            listDiv.innerHTML += `
+                <div class="paddler-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="paddler-name">${p.name}</div>
+                            <div class="paddler-meta">Age: ${p.age} | Experience Level: ${p.experience}</div>
+                        </div>
+                        <button class="expand-btn" onclick="toggleComments(${idx})">Comments</button>
+                    </div>
+                    <div id="drawer-${idx}" class="comments-drawer">${p.comments}</div>
+                </div>
+            `;
+        });
+    }
+    
+    // Show the group selection list
+    function loadGroupPaddlers() {
+        const listDiv = document.getElementById("group-paddler-list");
+        
+        listDiv.innerHTML = "";
+        
+        paddlers.forEach((p, idx) => {
+        listDiv.innerHTML += `
+            <div class="group-paddler">
+                <input 
+                    type="checkbox"
+                    id="group-paddler-${idx}"
+                    value="${idx}"
+                >
+                
+                <label for="group-paddler-${idx}">
+                    <strong>${p.name}</strong>
+                    - age: ${p.age}
+                    - experience: ${p.experience}
+                </label>
+            </div>
+        `;
+        });
+    }
+    
+    // Standard JavaScript view-toggle logic 
+    function toggleComments(idx) {
+        const drawer = document.getElementById(`drawer-${idx}`);
+        drawer.style.display = drawer.style.display === "block" ? "none" : "block";
+    }
+</script>
+</body>
+</html>
