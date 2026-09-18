@@ -39,7 +39,6 @@ class LoginRequest(BaseModel):
 @app.post("/api/login")
 def login(data: LoginRequest):
     if data.username == "admin" and data.password == "lucc":
-        df = convert_df()
         return {"status": "success"}
     raise HTTPException(status_code=401, detail="Invalid credentials")
 
