@@ -16,19 +16,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-# Load your custom paddlers spreadsheet data
-try:
-    df = convert_df()
-except FileNotFoundError:
-    # Fallback if the file isn't present
-    df = pd.DataFrame({
-        "name": ["empty", "empty"],
-        "age": [0, 0],
-        "experience": [0, 0],
-        "group": [0, 0],
-        "comments": ["Clouds float high...", "When the sun shines..."]
-    })
     
 
 
@@ -44,6 +31,18 @@ def login(data: LoginRequest):
 
 @app.get("/api/paddlers")
 def get_paddlers():
+    # Load your custom paddlers spreadsheet data
+    try:
+        df = convert_df()
+    except FileNotFoundError:
+        # Fallback if the file isn't present
+        df = pd.DataFrame({
+            "name": ["empty", "empty"],
+            "age": [0, 0],
+            "experience": [0, 0],
+            "group": [0, 0],
+            "comments": ["Clouds float high...", "When the sun shines..."]
+        })
     # Force column headers to lowercase and convert to standard JSON list format
     df.columns = df.columns.str.lower()
     return df.to_dict(orient="records")
