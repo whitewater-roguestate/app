@@ -16,7 +16,7 @@ import base64
 
 
 def convert_df():
-    load_dotenv(find_dotenv())
+    #load_dotenv(find_dotenv())
     # 1. Authenticate using ENVIRONMENT VARIABLE
     base64_string = os.getenv("GOOGLE_CREDS_BASE64")
     decoded_bytes = base64.b64decode(base64_string)
