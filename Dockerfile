@@ -12,8 +12,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY main.py .
 COPY index.html .
 COPY paddlers.csv .
-COPY credentials.json .
-COPY .env .
 COPY convert_responses.py .
 
 # 5. Inform Docker that the container listens on port 8000 at runtime
