@@ -2,4 +2,11 @@ fastapi
 uvicorn
 pandas
 gspread
+gspread-dataframe
 python-dotenv
+cachetools
+aiofiles
+python-multipart
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib

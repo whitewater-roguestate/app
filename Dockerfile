@@ -9,9 +9,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt 
 
 # 4. Copy your application files into the container
-COPY main.py .
-COPY index.html .
-COPY convert_responses.py .
+COPY . .
 
 # 5. Inform Docker that the container listens on port 8000 at runtime
 EXPOSE 8000
