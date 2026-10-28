@@ -55,7 +55,7 @@ def get_credentials():
     
     # 1. Define absolute paths to prevent working-directory mismatches
     # Render mounts the secret file relative to the repo root.
-    RENDER_SECRET_PATH = os.path.abspath("token.json") 
+    RENDER_SECRET_PATH = "/etc/secrets/token.json" 
     WRITABLE_TMP_PATH = "/tmp/token.json"
     
     # 2. Determine which token file to use
