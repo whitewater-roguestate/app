@@ -53,7 +53,7 @@ def get_local_timestamp():
         
 def get_credentials():
     
-    TOKEN_FILE = "services/token.json"
+    TOKEN_FILE = "token.json"
     creds = Credentials.from_authorized_user_file(TOKEN_FILE,SCOPES)
     # Refresh the access token automatically if necessary
     if creds.expired and creds.refresh_token:
