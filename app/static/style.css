@@ -1,0 +1,254 @@
+body {
+    --primary-col: #000088;
+    --secondary-col: #0000FF;
+    --back-col: #888888;
+    --text-col: #FFFFFF;
+    --input-col: #666666;
+    background-color: var(--back-col);
+    color: var(--text-col);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+.container {
+    width: 100%;
+    max-width: 600px;
+}
+h1, h2 { color: var(--primary-col); text-align: center; margin-bottom: 25px; }
+
+/* Input Field Overrides */
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    background-color: var(--input-col);
+    color: var(--text-col);
+    border: 1px solid var(--primary-col);
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+/* This targets the placeholder text specifically */
+input::placeholder {
+    color: var(--text-col);
+    opacity: 0.6; /* Optional: drops the brightness so it looks like a hint */
+}
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--primary-col);
+    color: var(--text-col);
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+button:hover { opacity: 0.9; }
+
+/* Interactive 4-Tab Bar Engine Layout */
+.tab-bar {
+    display: flex;
+    border-bottom: 2px solid var(--primary-col);
+    margin-bottom: 20px;
+}
+.tab-btn {
+    flex: 1;
+    background-color: transparent;
+    color: var(--primary-col);
+    border: none;
+    padding: 12px 5px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 0;
+}
+.tab-btn.active {
+    color: var(--secondary-col);
+    border-bottom: 3px solid var(--primary-col);
+    margin-bottom: -2px;
+}
+.tab-content { display: none; padding: 10px 0; }
+.tab-content.active { display: block; }
+
+/* Grid-based Profile Card Styling */
+.paddler-card {
+    border: 1px solid var(--primary-col);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: var(--input-col);
+    position: relative;
+}
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.card-header > div:first-child {
+    padding-right: 40px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.paddler-name {
+    font-size: 20px;
+    font-weight: bold;
+    text-transform: capitalize;
+    margin: 0;
+}
+.paddler-meta {
+    color: black;
+    font-size: 14px;
+    margin: 5px 0 0 0;
+}
+.expand-btn {
+    width: auto;
+    padding: 6px 12px;
+    background-color: transparent;
+    color: var(--primary-col);
+    border: 1px solid var(--secondary-col);
+    font-size: 13px;
+}
+.expand-btn:hover { background-color: var(--secondary-col); color: var(--text-col); }
+
+.options-btn {
+    display: flex;
+    align-self: flex-start;
+    width: auto;
+    padding: 6px 12px;
+    background-color: transparent;
+    color: var(--primary-col);
+    border: 1px solid var(--secondary-col);
+    font-size: 10px;
+}
+.options-btn:hover { background-color: var(--secondary-col); color: var(--text-col); }
+
+/* Container to keep options buttons side-by-side on the right */
+.card-actions-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between Delete and ... buttons */
+    align-self: flex-start;
+}
+
+/* Red Delete Action Button Styling */
+.btn-delete-action {
+    background-color: #ff4d4d;
+    color: white;
+    border: 1px solid #cc3333;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    width: auto;
+}
+.btn-delete-action:hover { 
+    background-color: #cc3333; 
+    opacity: 1; 
+}
+
+/* Pop-out Overlay Modal Layer inside the card frame */
+.delete-confirm-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.delete-confirm-overlay p {
+    margin: 0 0 10px 0;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.confirm-btn-row {
+    display: flex;
+    gap: 10px;
+    width: 80%;
+    max-width: 200px;
+}
+
+.confirm-btn-row button {
+    padding: 6px;
+    font-size: 13px;
+}
+
+.btn-yes { background-color: #d9534f; }
+.btn-no { background-color: #5cb85c; }
+
+/* Expandable Comments Drawer Layout */
+.comments-drawer {
+    display: none;
+    margin-top: 15px;
+    padding: 12px;
+    background-color: var(--input-col);
+    border-left: 4px solid var(--secondary-col);
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: black;
+}
+.group-paddler {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 8px;
+    border: 1px solid black;
+    border-radius: 6px;
+    background-color: var(--input-col);
+}       
+.group-paddler input {
+    width: auto;
+    margin: 0 12px 0 0;
+}
+.group-paddler label {
+    cursor: pointer;
+    flex: 1;
+}
+.loading-message {
+    color: black;
+    text-align: center;
+}
+.error-message {
+    color: #ff4d4d;
+    text-align: center;
+}
+
+/* Blocks all interaction while a group is being created */
+#group-loading-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 2000;
+}
+
+/* Trip Log Custom Delete Layout Anchors */
+.paddler-card.form-card {
+    position: relative; /* Targets your existing form-card container */
+}
+
+/* Ensure the layout matches the group cards */
+#trip-log .paddler-card {
+    position: relative; 
+}
+
