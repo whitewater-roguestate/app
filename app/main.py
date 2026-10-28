@@ -6,7 +6,6 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from routers import groups, login, profiles, trip_log
 from services import email, form, sheets, drive
-from app_cache import app_cache
 from dotenv import load_dotenv
 import logging
 import asyncio
