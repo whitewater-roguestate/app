@@ -53,13 +53,38 @@ def get_local_timestamp():
         
 def get_credentials():
     
-    TOKEN_FILE = "token.json"
-    creds = Credentials.from_authorized_user_file(TOKEN_FILE,SCOPES)
-    # Refresh the access token automatically if necessary
+    # 1. Define absolute paths to prevent working-directory mismatches
+    # Render mounts the secret file relative to the repo root.
+    RENDER_SECRET_PATH = os.path.abspath("token.json") 
+    WRITABLE_TMP_PATH = "/tmp/token.json"
+    
+    # 2. Determine which token file to use
+    # Always prefer the updated, refreshed token in /tmp if it exists
+    if os.path.exists(WRITABLE_TMP_PATH):
+        target_token_path = WRITABLE_TMP_PATH
+    elif os.path.exists(RENDER_SECRET_PATH):
+        target_token_path = RENDER_SECRET_PATH
+    else:
+        raise FileNotFoundError(
+            f"Google token file not found at secret path ({RENDER_SECRET_PATH}) "
+            f"or scratch path ({WRITABLE_TMP_PATH})"
+        )
+        
+    # 3. Load the credentials file safely
+    creds = Credentials.from_authorized_user_file(target_token_path, SCOPES)
+    
+    # 4. Handle expired tokens without tripping read-only filesystem errors
     if creds.expired and creds.refresh_token:
+        logger.info("Google OAuth token expired. Refreshing token...")
         creds.refresh(Request())
-        with open(TOKEN_FILE, "w") as token:
-            token.write(creds.to_json())
+        
+        # Always write refreshes to the writable /tmp directory
+        try:
+            with open(WRITABLE_TMP_PATH, "w") as token:
+                token.write(creds.to_json())
+            logger.info("Refreshed token cached successfully in scratch storage.")
+        except Exception as e:
+            logger.error(f"Failed to cache refreshed token to scratch disk: {e}")
     
     return creds
             
