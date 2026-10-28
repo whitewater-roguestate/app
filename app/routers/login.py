@@ -48,6 +48,6 @@ async def initialize_login_screen(request: Request, background_tasks: Background
 def login(data: LoginRequest):
     USERNAME = os.getenv("WWRS_USER")
     PASSWORD = os.getenv("WWRS_PASS")
-    if data.username.lower() == USERNAME and data.password == PASSWORD:
+    if data.username.lower() == USERNAME and data.password.lower() == PASSWORD:
         return {"status": "success"}
     raise HTTPException(status_code=401, detail="Invalid credentials")
