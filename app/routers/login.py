@@ -22,7 +22,7 @@ async def initialize_login_screen(request: Request, background_tasks: Background
     try:
         request.app.state.prefetch_ready.clear()
         # Signal the sheets service to spin up background threads for all sheets
-        SPREADSHEET_KEY = "1pI007JsK5eiZD91V77IhkXfAZ7gDiZ7ShfVOI9Jg7ZM"
+        SPREADSHEET_KEY = os.getenv("SPREADSHEET_KEY")
         
         
         async def run_prefetch_and_unlock():
