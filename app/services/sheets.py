@@ -21,7 +21,7 @@ SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive"]
 
-SPREADSHEET_KEY = "1pI007JsK5eiZD91V77IhkXfAZ7gDiZ7ShfVOI9Jg7ZM"
+SPREADSHEET_KEY = os.getenv("SPREADSHEET_KEY")
 
 
 # Paths for caching your local state
