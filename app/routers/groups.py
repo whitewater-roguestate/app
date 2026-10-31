@@ -4,6 +4,7 @@ from services import sheets
 import pandas as pd
 import time
 from pydantic import BaseModel
+import traceback
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -70,7 +71,6 @@ def delete_group(group_id: int):
     except HTTPException as http_err:
         raise http_err
     except Exception as e:
-        import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
         
