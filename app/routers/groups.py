@@ -26,7 +26,11 @@ def get_groups():
         logger.debug(f"{group_directory}")
         
         return {"status": "success", "groups": group_directory}
+    
+    except HTTPException as http_err:
+        raise http_err
     except Exception as e:
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
     
     
@@ -108,8 +112,12 @@ def post_groups(data: GroupRequest):
         logger.info(f"Process finished in {duration:.4f} seconds")
         
         return {"status": "success", "message": f"Successfully created group '{data.group_name}'"}
+
+    except HTTPException as http_err:
+        raise http_err
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))  
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 

@@ -1,5 +1,4 @@
 .env
-credentials.json
-token.json
+etc
 .wwenv
 relaunch.sh

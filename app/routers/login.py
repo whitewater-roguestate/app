@@ -4,7 +4,7 @@ import os
 from services import sheets
 from fastapi.concurrency import run_in_threadpool
 import logging
-
+import traceback
 
 logger = logging.getLogger(__name__)
 
@@ -39,15 +39,35 @@ async def initialize_login_screen(request: Request, background_tasks: Background
         
         return {"message": "Global data layer validation sequence launched."}
     
+    except HTTPException as http_err:
+        raise http_err
     except Exception as e:
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
         
 
 
 @router.post("")
 def login(data: LoginRequest):
-    USERNAME = os.getenv("WWRS_USER")
-    PASSWORD = os.getenv("WWRS_PASS")
-    if data.username.lower() == USERNAME and data.password.lower() == PASSWORD:
-        return {"status": "success"}
-    raise HTTPException(status_code=401, detail="Invalid credentials")
+    try:
+        USERNAME = os.getenv("WWRS_USER")
+        PASSWORD = os.getenv("WWRS_PASS")
+        if data.username.lower() == USERNAME and data.password.lower() == PASSWORD:
+            return {"status": "success"}
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    except HTTPException as http_err:
+        raise http_err
+    except Exception as e:
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+    
+        
+        
+        
+        
+        
+        
+        
+        
+        

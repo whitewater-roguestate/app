@@ -6,7 +6,7 @@ import os
 from datetime import datetime
 from googleapiclient.http import MediaIoBaseUpload
 import shutil
-
+import traceback
 
 logger = logging.getLogger(__name__)
 #logger.setLevel(logging.INFO)
@@ -50,7 +50,10 @@ def get_trip_log():
         
         return {"status": "success", "trips": trip_record[::-1], "files": files[::-1]}
     
+    except HTTPException as http_err:
+        raise http_err
     except Exception as e:
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
         
 
@@ -91,7 +94,6 @@ def delete_log_post(trip_ref: str):
     except HTTPException as http_err:
         raise http_err
     except Exception as e:
-        import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
         
@@ -179,8 +181,9 @@ def post_trip_log(trip_data: TripLogSchema = Depends()):
         return {"status": "success", "message": "Trip entry written successfully."}
                 
         
+    except HTTPException as http_err:
+        raise http_err
     except Exception as e:
-        import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
         

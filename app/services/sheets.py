@@ -21,7 +21,6 @@ SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive"]
 
-SPREADSHEET_KEY = os.getenv("SPREADSHEET_KEY")
 
 
 # Paths for caching your local state
@@ -98,12 +97,14 @@ def get_gspread_client():
 
 
 def append_row_to_sheet(worksheet_name, row_data):
+    SPREADSHEET_KEY = os.getenv("SPREADSHEET_KEY")
     gc = get_gspread_client()
     sh = gc.open_by_key(SPREADSHEET_KEY)
     worksheet = sh.worksheet(worksheet_name)
     worksheet.append_row(row_data, value_input_option="USER_ENTERED")
 
 def delete_row_from_sheet(worksheet_name, index):
+    SPREADSHEET_KEY = os.getenv("SPREADSHEET_KEY")
     gc = get_gspread_client()
     sh = gc.open_by_key(SPREADSHEET_KEY)
     worksheet = sh.worksheet(worksheet_name)
