@@ -48,3 +48,22 @@ app.state.prefetch_ready.set()
 @app.get("/")
 def read_index():
     return FileResponse("index.html")
+
+@app.get("/privacy", response_class=HTMLResponse)
+def get_privacy_policy():
+    return """
+    <!DOCTYPE html>
+    <html>
+    <head><title>Privacy Policy - Paddler Manager</title></head>
+    <body style="font-family: sans-serif; padding: 40px;">
+        <h1>Privacy Policy</h1>
+        <p>Last updated: November 2026</p>
+        <p>Paddler Manager uses Google OAuth tokens to access Google APIs on your behalf:</p>
+        <ul>
+            <li><strong>Google Drive:</strong> To upload and list photos for trip logs.</li>
+            <li><strong>Google Sheets:</strong> To write and sync trip log entries.</li>
+        </ul>
+        <p>We do not store your Google password. Your authentication tokens are stored securely to maintain background API access. We never share or sell your data.</p>
+    </body>
+    </html>
+    """

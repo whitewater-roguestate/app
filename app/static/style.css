@@ -74,6 +74,14 @@ button:hover { opacity: 0.9; }
 .tab-content { display: none; padding: 10px 0; }
 .tab-content.active { display: block; }
 
+/* Small "N paddlers" line above the paddler list */
+.paddler-count {
+    color: black;
+    font-size: 12px;
+    margin: 0 0 8px 2px;
+}
+.paddler-count:empty { display: none; }
+
 /* Grid-based Profile Card Styling */
 .paddler-card {
     border: 1px solid var(--primary-col);

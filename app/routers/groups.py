@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 import logging
-from services import sheets
+from services import sheets, form
 import pandas as pd
 import time
 from pydantic import BaseModel
@@ -16,6 +16,7 @@ router = APIRouter()
 class GroupRequest(BaseModel):
     group_name: str
     member_names: list[str]
+    member_emails: list[str]
     
     
     
@@ -83,6 +84,8 @@ def delete_group(group_id: int):
 @router.post("")
 def post_groups(data: GroupRequest):
     try:
+        if len(data.member_emails) != len(data.member_names):
+            raise HTTPException(status_code=400, detail="member_emails must have exactly one entry per member_names entry")
         master_data = sheets.get_local_cache()
         directory = master_data["Groups Directory 3"]
         df = pd.DataFrame(directory)
@@ -95,16 +98,23 @@ def post_groups(data: GroupRequest):
             new_code = 1
             
         
-        data.member_names = ", ".join(data.member_names)
+        # Names and emails are each stored as a comma separated list, in matching order
+        member_names = ", ".join(data.member_names)
+        member_emails = ", ".join(form.normalize_email(e) for e in data.member_emails)
 
             
         # Append the new group to local file
-        directory.append({'group_name': data.group_name, 'code': new_code, 'members': data.member_names})
+        directory.append({
+            'group_name': data.group_name,
+            'code': new_code,
+            'member_names': member_names,
+            'member_emails': member_emails
+        })
         master_data["Groups Directory 3"] = directory
         sheets.save_local_cache(master_data, sheets.get_local_timestamp())
         
         # Append the new group to spreadsheet
-        row_data = [data.group_name, new_code, data.member_names]
+        row_data = [data.group_name, new_code, member_names, member_emails]
         start_time = time.perf_counter()
         logger.info("Appending group row process started...")
         sheets.append_row_to_sheet("Groups Directory 3", row_data)

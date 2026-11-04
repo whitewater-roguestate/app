@@ -159,21 +159,25 @@ def post_trip_log(trip_data: TripLogSchema = Depends()):
         directory = sheets.get_local_cache()["Groups Directory 3"]
         log = sheets.get_local_cache()["Trip Log 4"]
         logger.debug(f"{directory}")
-        members = next((d["members"] for d in directory if str(d["code"]) == group_code), "")
+        group = next((d for d in directory if str(d["code"]) == group_code), None)
+        
+        # Names are for display; emails are what trips are matched to paddlers on
+        members = group["member_names"] if group else ""
+        member_emails = group["member_emails"] if group else ""
         for d in directory:
             logger.debug(f"group data code: {d['code']}")
-        logger.info(f"Trip paddlers: {members}")        
+        logger.info(f"Trip paddlers: {members} ({member_emails})")     
         
         
         # --- LOCAL RECORDS APPEND --- #
-        log.append({"date": current_date, "location": trip_data.location, "message": trip_data.message, "members": members})
+        log.append({"date": current_date, "location": trip_data.location, "message": trip_data.message, "members": members, "member_emails": member_emails})
         master_data = sheets.get_local_cache()
         master_data["Trip Log 4"] = log
         sheets.save_local_cache(master_data, sheets.get_local_timestamp())
         
         
         # --- SHEET APPEND ---
-        row_data = [current_date, trip_data.location, trip_data.message, members]
+        row_data = [current_date, trip_data.location, trip_data.message, members, member_emails]
         logger.info("Appending group row process started...")
         sheets.append_row_to_sheet("Trip Log 4", row_data)
         logger.info(f"Process finished")

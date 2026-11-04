@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Request, HTTPException
-from services import sheets
+from services import sheets, form
 import logging
 import pandas as pd
-import numpy as np
+from collections import Counter
 import traceback
 
 
@@ -26,19 +26,19 @@ async def get_paddlers(request: Request):
         logger.debug(f"paddler data: {paddler_data}")
         df = pd.DataFrame(paddler_data)
         
-        # Calculate trips column
-        df["trips"] = np.zeros(len(paddler_data))
-        paddler_names = df["name"].values
-        trip_members = [d["members"] for d in trip_data]
-        logger.debug(f"paddlers on trips: {trip_members}")
-        logger.debug(f"all paddlers: {paddler_names}")
-        for name in paddler_names:
-            count = 0
-            for t in trip_members:
-                #logger.debug(f"{t}")
-                if name in t:
-                    count += 1
-            df.loc[df["name"] == name,"trips"] = count
+        # Calculate trips column.
+        # Paddlers are identified by email: a trip counts for a paddler when their email
+        # is one of the entries in that trip's member_emails list. Entries are compared
+        # whole (not as substrings) after normalising case/whitespace, and blank emails
+        # never match anyone.
+        paddler_emails = df["email"].map(form.normalize_email)
+        trip_counts = Counter()
+        for t in trip_data:
+            emails_on_trip = {e for e in form.split_email_list(t.get("member_emails", "")) if e}
+            logger.debug(f"emails on trip: {emails_on_trip}")
+            trip_counts.update(emails_on_trip)
+        logger.debug(f"all paddlers: {paddler_emails.values}")
+        df["trips"] = paddler_emails.map(lambda e: trip_counts.get(e, 0))
             
                     
         

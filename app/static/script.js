@@ -59,10 +59,14 @@ function switchTab(index) {
 // Build the profile loop using the data columns you provided
 async function loadPaddlers() {
     const listDiv = document.getElementById("paddler-list");
+    const countDiv = document.getElementById("paddler-count");
+    countDiv.textContent = "";
     listDiv.innerHTML = "<p class='loading-message'>Loading paddlers...</p>";
     
     const response = await fetch(`${API_URL}/api/paddlers`);
     paddlers = await response.json();
+    
+    countDiv.textContent = `${paddlers.length} ${paddlers.length === 1 ? "paddler" : "paddlers"}`;
     
     
     listDiv.innerHTML = ""; 
@@ -132,11 +136,15 @@ async function createGroup() {
         return;
     }
 
-    // 3. Loop over the checked boxes, look at their value (the index), and get the real name
-    const selectedMembers = Array.from(checkedBoxes).map(box => {
+    // 3. Loop over the checked boxes, look at their value (the index), and get the real paddler
+    const selectedPaddlers = Array.from(checkedBoxes).map(box => {
         const idx = parseInt(box.value);
-        return paddlers[idx].name; // Looks up the name from your master paddlers list
+        return paddlers[idx]; // Looks up the paddler from your master paddlers list
     });
+    const selectedMembers = selectedPaddlers.map(p => p.name);
+    // Email is the unique identifier for a paddler. Keep "" (not undefined/null) for a
+    // missing email so the list stays the same length/order as the names.
+    const selectedEmails = selectedPaddlers.map(p => p.email || "");    
     
     // Safety Check: If group name is blank, auto-generate one from selected member names
     if (!groupName) {
@@ -146,7 +154,8 @@ async function createGroup() {
     // 4. Package the data up into a clean JSON bundle
     const payload = {
         group_name: groupName,
-        member_names: selectedMembers
+        member_names: selectedMembers,
+        member_emails: selectedEmails
     };
     
     showGroupLoading();
@@ -207,7 +216,7 @@ async function loadSavedGroups() {
         groups.forEach((g, idx) => {
             const name = g.group_name || g.group_names || g.Name || g.name || "Unnamed Group";
             const code = g.code || g.Code || "N/A";
-            const members = g.members;
+            const members = g.member_names;
             
             // Using group code as a unique parameter reference identifier if it exists
             const recordId = g.code || idx; 
@@ -393,7 +402,7 @@ async function loadTripLog() {
                             <div class="paddler-name">${t.location}</div>
                             <div class="paddler-meta">${t.message}</div>
                             ${imageHtml}
-                            <div class="paddler-name" style="text-align: right;">${t.members}</div>
+                            <div class="paddler-name" style="text-align: right;">${t.member_names}</div>
                         </div>
                         
                         <!-- Side-by-side actions configuration layout on the right -->

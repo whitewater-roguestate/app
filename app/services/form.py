@@ -10,6 +10,28 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
+def normalize_email(value):
+    """Canonical form of an email address, used everywhere emails are stored or compared.
+
+    Trimmed and lower-cased so "Sam@Example.com " and "sam@example.com" are the same
+    paddler. Missing / blank values become "" (which never matches anyone).
+    """
+    if value is None:
+        return ""
+    return str(value).strip().lower()
+
+
+def split_email_list(value):
+    """Parse a comma separated email column (e.g. member_emails) into a list.
+
+    Order is preserved so it stays positionally aligned with the matching names column.
+    Blank entries are kept as "" for the same reason - callers that only want real
+    addresses should skip empty strings.
+    """
+    if value is None or str(value).strip() == "":
+        return []
+    return [normalize_email(e) for e in str(value).split(",")]
+
 
 
 def format_responses(responses):
@@ -63,8 +85,12 @@ def format_responses(responses):
 
     # 5. CONSTRUCT FINAL DATAFRAME AND RETURN
     # No risk of index mismatch because columns remain bound to the dataframe structure
+    # Email is the unique identifier for a paddler (see normalize_email)
+    email = df["Email Address"].fillna("").map(normalize_email)
+    
     data_formatted = pd.DataFrame({
         "name": df["Name"],
+        "email": email,
         "age": df["Age"],
         "experience": experience,
         "priority": priority,
