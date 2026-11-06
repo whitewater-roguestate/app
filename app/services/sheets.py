@@ -114,10 +114,10 @@ def delete_row_from_sheet(worksheet_name, index):
 
 def start_global_prefetch(SPREADSHEET_KEY):
     logger.info("starting the prefetch")
-    gc = get_gspread_client()
+    creds = get_credentials()
+    gc = gspread.Client(auth=creds)
     sh = gc.open_by_key(SPREADSHEET_KEY)
-    cache_buster = {"_cb": str(int(time.time()))}
-    live_timestamp = sh.get_lastUpdateTime(params=cache_buster)
+    live_timestamp = sh.get_lastUpdateTime()
     logger.info(f"Spreadsheet metadata timestamp fetched: {live_timestamp}")
     
     cached_timestamp = get_local_timestamp()
