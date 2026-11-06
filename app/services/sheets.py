@@ -116,8 +116,8 @@ def start_global_prefetch(SPREADSHEET_KEY):
     logger.info("starting the prefetch")
     gc = get_gspread_client()
     sh = gc.open_by_key(SPREADSHEET_KEY)
-    sh.refresh_lastUpdateTime()
-    live_timestamp = sh.get_lastUpdateTime()
+    cache_buster = {"_cb": str(int(time.time()))}
+    live_timestamp = sh.get_lastUpdateTime(params=cache_buster)
     logger.info(f"Spreadsheet metadata timestamp fetched: {live_timestamp}")
     
     cached_timestamp = get_local_timestamp()
