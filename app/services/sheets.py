@@ -114,10 +114,10 @@ def delete_row_from_sheet(worksheet_name, index):
 
 def start_global_prefetch(SPREADSHEET_KEY):
     logger.info("starting the prefetch")
-    creds = get_credentials()
-    gc = gspread.Client(auth=creds)
+    gc = get_gspread_client()
     sh = gc.open_by_key(SPREADSHEET_KEY)
-    live_timestamp = sh.get_lastUpdateTime()
+    update_sheet = sh.worksheet("last updated")
+    live_timestamp = update_sheet.acell("A1").value
     logger.info(f"Spreadsheet metadata timestamp fetched: {live_timestamp}")
     
     cached_timestamp = get_local_timestamp()
@@ -131,7 +131,8 @@ def start_global_prefetch(SPREADSHEET_KEY):
     
     master_workbook_data = {}
     # Loop dynamically through every worksheet in the file
-    all_worksheets = sh.worksheets()
+    exclude_names = {"last edited", "Form Responses (backup)"}
+    all_worksheets = [w for w in sh.worksheets() if w.title not in exclude_names]
     for worksheet in all_worksheets:
         tab_name = worksheet.title
         logger.info(f"Pulling rows from: {tab_name}")
