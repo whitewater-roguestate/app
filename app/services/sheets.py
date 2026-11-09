@@ -116,7 +116,7 @@ def start_global_prefetch(SPREADSHEET_KEY):
     logger.info("starting the prefetch")
     gc = get_gspread_client()
     sh = gc.open_by_key(SPREADSHEET_KEY)
-    update_sheet = sh.worksheet("last updated")
+    update_sheet = sh.worksheet("last edited")
     live_timestamp = update_sheet.acell("A1").value
     logger.info(f"Spreadsheet metadata timestamp fetched: {live_timestamp}")
     
