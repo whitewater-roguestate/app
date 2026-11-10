@@ -71,6 +71,7 @@ async function loadPaddlers() {
     
     listDiv.innerHTML = ""; 
     paddlers.forEach((p, idx) => {
+        
         listDiv.innerHTML += `
             <div class="paddler-card">
                 <div class="card-header">
@@ -81,6 +82,10 @@ async function loadPaddlers() {
                     <button class="expand-btn" onclick="toggleComments(${idx})">Comments</button>
                 </div>
                 <div id="drawer-${idx}" class="comments-drawer">${p.comments}</div>
+                <div id="contact-buttons-${idx}" class="card-actions-wrapper" style="display: none;">
+                    <a id="email-${idx}" class="email-btn" href="mailto:${p.email}" style="text-decoration: none; target="_blank" rel="noopener noreferrer">✉</a>
+                    ${p.whatsapp ? `<a id="whatsapp-${idx}" class="whatsapp-btn" href="https://wa.me/${p.whatsapp}" style="text-decoration: none; target="_blank" rel="noopener noreferrer">✆</a>` : ''}
+                </div>
             </div>
         `;
     });
@@ -89,7 +94,9 @@ async function loadPaddlers() {
 // Standard JavaScript view-toggle logic 
 function toggleComments(idx) {
     const drawer = document.getElementById(`drawer-${idx}`);
+    const contactButtons = document.getElementById(`contact-buttons-${idx}`);
     drawer.style.display = drawer.style.display === "block" ? "none" : "block";
+    contactButtons.style.display = contactButtons.style.display === "flex" ? "none" : "flex";
 }
 
 

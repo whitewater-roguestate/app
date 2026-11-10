@@ -3,6 +3,7 @@ import logging
 from services import sheets
 import pandas as pd
 from datetime import datetime
+import phonenumbers
 
 
 logger = logging.getLogger(__name__)
@@ -31,6 +32,42 @@ def split_email_list(value):
     if value is None or str(value).strip() == "":
         return []
     return [normalize_email(e) for e in str(value).split(",")]
+
+
+
+def normalize_whatsapp(value, default_region="GB"):
+    """
+    Validates a phone number and formats it into E.164 format (without + or 00)
+    for use in wa.me URLs. Returns "" if invalid or blank.
+    """
+    if value is None:
+        return ""
+        
+    # Convert to string and remove leading/trailing spaces
+    cleaned_value = str(value).strip()
+    if not cleaned_value:
+        return ""
+        
+    try:
+        # Parse the number assuming a default region if no international prefix exists
+        parsed_number = phonenumbers.parse(cleaned_value, default_region)
+        
+        # Check if it's a structurally valid phone number
+        if phonenumbers.is_valid_number(parsed_number):
+            # E.164 format returns +447955086401. 
+            # WhatsApp URLs require it without the '+' character.
+            formatted = phonenumbers.format_number(
+                parsed_number, 
+                phonenumbers.PhoneNumberFormat.E164
+            )
+            return formatted.lstrip('+')
+            
+    except phonenumbers.NumberParseException:
+        # Catches text like "I can’t give you my number" or completely malformed strings
+        pass
+        
+    return ""
+
 
 
 
@@ -82,8 +119,14 @@ def format_responses(responses):
     # Append raw experience string if mapped result is 'other'
     other_mask = experience == "other"
     comments.loc[other_mask] = comments + "\nExperience: " + df.loc[other_mask, "Paddling Experience"].astype(str)
-
-    # 5. CONSTRUCT FINAL DATAFRAME AND RETURN
+    
+    
+    # 5. WHATSAPP NUMBER IF GIVEN
+    whatsapp = df["Whatsapp"].fillna("").map(
+        lambda x: normalize_whatsapp(x) if str(x).strip() else ""
+    )
+    
+    # 6. CONSTRUCT FINAL DATAFRAME AND RETURN
     # No risk of index mismatch because columns remain bound to the dataframe structure
     # Email is the unique identifier for a paddler (see normalize_email)
     email = df["Email Address"].fillna("").map(normalize_email)
@@ -91,6 +134,7 @@ def format_responses(responses):
     data_formatted = pd.DataFrame({
         "name": df["Name"],
         "email": email,
+        "whatsapp": whatsapp,
         "age": df["Age"],
         "experience": experience,
         "priority": priority,

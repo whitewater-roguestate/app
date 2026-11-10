@@ -134,12 +134,41 @@ button:hover { opacity: 0.9; }
 }
 .options-btn:hover { background-color: var(--secondary-col); color: var(--text-col); }
 
+/*✉*/
+.email-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    padding: 2px 4px;
+    background-color: transparent;
+    color: #cc3333;
+    border: 1px solid #cc3333;
+    font-size: 20px;
+}
+.email-btn:hover { background-color: #ff4d4d; color: var(--text-col); }
+
+/*✆*/
+.whatsapp-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    padding: 2px 4px;
+    background-color: transparent;
+    color: #075E54;
+    border: 1px solid #075E54;
+    font-size: 20px;
+}
+.whatsapp-btn:hover { background-color: #25D366; color: var(--text-col); }
+
 /* Container to keep options buttons side-by-side on the right */
 .card-actions-wrapper {
     display: flex;
     align-items: center;
     gap: 8px; /* Space between Delete and ... buttons */
     align-self: flex-start;
+    justify-self: right;
 }
 
 /* Red Delete Action Button Styling */
